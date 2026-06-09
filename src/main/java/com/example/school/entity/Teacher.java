@@ -1,4 +1,4 @@
-package com.example.school;
+package com.example.school.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
