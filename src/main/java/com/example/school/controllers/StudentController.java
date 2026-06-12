@@ -6,6 +6,11 @@ import com.example.school.services.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.core.io.ByteArrayResource;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import java.util.List;
 
@@ -37,5 +42,17 @@ public class StudentController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         studentService.delete(id);
         return ResponseEntity.noContent().build();
+    }@GetMapping("/export")
+    public ResponseEntity<ByteArrayResource> exportToExcel() throws IOException {
+
+        ByteArrayOutputStream out = studentService.exportToExcel();
+        ByteArrayResource resource = new ByteArrayResource(out.toByteArray());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=students.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .contentLength(out.size())
+                .body(resource);
     }
-}
+
+    }

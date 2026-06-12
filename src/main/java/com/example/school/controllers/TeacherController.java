@@ -5,11 +5,16 @@ import com.example.school.services.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.core.io.ByteArrayResource;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 @RestController
 @RequestMapping("/api/teachers")
 @RequiredArgsConstructor
+
 public class TeacherController {
     private final TeacherService teacherService;
 
@@ -34,5 +39,13 @@ public class TeacherController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         teacherService.delete(id);
         return ResponseEntity.noContent().build(); // 204 No Content qaytarır
+    }
+    @GetMapping("/export")
+    public ResponseEntity<ByteArrayResource>exportToExcel() throws IOException{
+        ByteArrayOutputStream out=teacherService.exportToExcel();
+        ByteArrayResource resource=new ByteArrayResource(out.toByteArray());
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=teachers.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(resource);
     }
 }
